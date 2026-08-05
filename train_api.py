@@ -12,7 +12,7 @@ def get_all_stations() ->dict:
     """
     url = "https://api.railradar.in/v1/lookup/stations"
     headers = {
-        "Authorization" : f"Bearer{RAILRADAR_API_KEY}"
+        "Authorization": f"Bearer {RAILRADAR_API_KEY}"
     }
 
     response = requests.get(url , headers = headers)
@@ -40,11 +40,13 @@ def search_trains(source: str , destination: str , date: str):
 
     url = f"https://api.railradar.in/v1/trains/between/{source}/{destination}"
 
-    headers = {"Authorization" : f"Bearer : {RAILRADAR_API_KEY}"}
-    params = {"date" : date}
+    headers = {"Authorization": f"Bearer {RAILRADAR_API_KEY}"}
+    params = {"date": date}
 
     response = requests.get(url , headers = headers , params = params)
     data = response.json()
+    
+    return data
 
 
 def get_seat_availability(source: str , destination: str , date: str):
