@@ -2,6 +2,8 @@ mcp
 langgraph
 langchain
 langchain-ollama
+langchain-mcp-adapters
 python-dotenv
 requests
 pydantic
+discord.py

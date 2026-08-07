@@ -1,4 +1,11 @@
+# Environment variables (SENSITIVE)
 .env
+
+# Virtual environment
 env5/
+
+# Python cache
 __pycache__/
-.vscode/
+
+# Node modules
+node_modules/
