@@ -183,11 +183,6 @@ Node.js side:
   ▸ railkit package (official SDK)
 
 
-┌─ LICENSE ────────────────────────────────────────────────────────────────────┐
-
-MIT - feel free to use this however you want.
-
-
 ┌─ AUTHOR ─────────────────────────────────────────────────────────────────────┐
 
 Built by Sivam Singh
