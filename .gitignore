@@ -9,3 +9,6 @@ __pycache__/
 
 # Node modules
 node_modules/
+
+# Package lock (auto-generated)
+package-lock.json

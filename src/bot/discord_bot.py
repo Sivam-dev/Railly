@@ -63,7 +63,9 @@ async def train_command(interaction: discord.Interaction, query: str):
             "recommended_train": None,
             "final_response": None,
             "follow_up_question": None,
-            "recommendation": None
+            "recommendation": None,
+            "missing_constraints": None,
+            "missing_labels": None
         }
         result = await bot.train_graph.ainvoke(initial_state)
         if "__interrupt__" in result:
@@ -72,6 +74,7 @@ async def train_command(interaction: discord.Interaction, query: str):
                 description="I couldn't extract all the required information from your query.",
                 color=discord.Color.orange()
             )
+            
             embed.add_field(name="What I understood:", value="", inline=False)
             if result.get("source"):
                 embed.add_field(name="From", value=result["source"], inline=True)
@@ -83,9 +86,17 @@ async def train_command(interaction: discord.Interaction, query: str):
                 embed.add_field(name="Budget", value=f"Rs.{result['budget']}", inline=True)
             if result.get("preferred_class"):
                 embed.add_field(name="Class", value=result["preferred_class"], inline=True)
+            
+            missing_info = ""
+            if result.get("missing_labels"):
+                for label in result["missing_labels"]:
+                    missing_info += f"- {label}\n"
+            else:
+                missing_info = "- Source station (From)\n- Destination station (To)\n- Journey date\n- Budget (in rupees)"
+            
             embed.add_field(
-                name="Please provide:",
-                value="Try including: source station, destination, date, budget, and class preference",
+                name="Missing Information:",
+                value=missing_info,
                 inline=False
             )
             embed.add_field(

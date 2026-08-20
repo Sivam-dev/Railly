@@ -23,6 +23,8 @@ class TrainState(TypedDict):
     final_response: str | None
     follow_up_question: str | None
     recommendation: dict | None
+    missing_constraints: list | None
+    missing_labels: list | None
 class extract(BaseModel):
      source: Optional[str]
      destination: Optional[str]
@@ -85,7 +87,7 @@ def constraint_extract(state: TrainState):
     "preferred_class": response.preferred_class if response.preferred_class is not None else state["preferred_class"],
 }
 def Missing_constraint(state:TrainState):
-     print(f"🔍 Missing_constraint check:")
+     print("Missing_constraint check:")
      print(f"  source: {state['source']}")
      print(f"  destination: {state['destination']}")
      print(f"  journey_date: {state['journey_date']}")
@@ -93,25 +95,35 @@ def Missing_constraint(state:TrainState):
      print(f"  preferred_departure: {state['preferred_departure']}")
      print(f"  preferred_arrival: {state['preferred_arrival']}")
      print(f"  preferred_class: {state['preferred_class']}")
+     
      missing = []
+     missing_labels = []
+     
      if state["source"] is None:
           missing.append("source")
+          missing_labels.append("Source station (From)")
      if state["destination"] is None:
           missing.append("destination")
+          missing_labels.append("Destination station (To)")
      if state["journey_date"] is None:
           missing.append("journey_date")
+          missing_labels.append("Journey date")
      if state["budget"] is None:
           missing.append("budget")
+          missing_labels.append("Budget (in rupees)")
+     
      print(f"  missing: {missing}")
+     
      if not missing:
-          print("  ✅ No missing constraints, continuing...")
+          print("  No missing constraints, continuing...")
           return {}
-     print(f"  ❌ Found missing constraints: {missing}")
-     question = "Please provide the following:\n"
-     for item in missing:
-          question += f"\n {item}"
-     answer = interrupt(question)
-     return {"user_query" : state["user_query"] + "\n" + answer}
+     
+     print(f"  Found missing constraints: {missing}")
+     
+     return {
+          "missing_constraints": missing,
+          "missing_labels": missing_labels
+     }
 async def resolve_station(station_name: str, max_retries: int = 3, auto_select_first: bool = False) -> str:
     search_station_tool = await get_search_station_tool_async()
     if not station_name or not station_name.strip():
@@ -150,7 +162,7 @@ async def resolve_station(station_name: str, max_retries: int = 3, auto_select_f
         if auto_select_first:
             first_code = list(matches.keys())[0]
             first_name = matches[first_code]
-            print(f"🚂 Auto-selected: {first_code} ({first_name}) for '{station_name}'")
+            print(f"Auto-selected: {first_code} ({first_name}) for '{station_name}'")
             return first_code
         station_list = "\n".join([f"  {code}: {name}" for code, name in matches.items()])
         question = (
@@ -175,11 +187,11 @@ async def resolve_station(station_name: str, max_retries: int = 3, auto_select_f
                     return user_code
             return list(matches.keys())[0]
 async def Train_details_node(state: TrainState):
-    print("🚂 Starting Train_details_node...")
-    print(f"🔍 Resolving stations: source='{state['source']}', destination='{state['destination']}'")
+    print("Starting Train_details_node...")
+    print(f"Resolving stations: source='{state['source']}', destination='{state['destination']}'")
     try:
         source_code = await resolve_station(state["source"], auto_select_first=True)
-        print(f"✅ Source resolved: {state['source']} -> {source_code}")
+        print(f"Source resolved: {state['source']} -> {source_code}")
     except Exception as e:
         print(f"❌ Source resolution failed: {e}")
         raise

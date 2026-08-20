@@ -1,171 +1,193 @@
-# 🚂 Train Recommendation Discord Bot
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     TRAIN RECOMMENDATION DISCORD BOT                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-A Discord bot that recommends trains using LangGraph workflow, MCP (Model Context Protocol) tools, and multiple train APIs (RailRadar + RailKit).
+This is a Discord bot that helps you find the best trains for your journey. 
+It uses AI to understand what you're looking for and searches through multiple 
+train APIs to give you personalized recommendations.
 
-## 📁 Project Structure
 
-```
-train_mcp_server/
-├── src/
-│   ├── api/                    # API integrations
-│   │   ├── train_api.py        # RailRadar, RailKit, IRCTC2 API wrappers
-│   │   └── railkit_wrapper.js  # Node.js wrapper for RailKit SDK
-│   ├── mcp/                    # MCP Server
-│   │   ├── server.py           # FastMCP server with tools
-│   │   └── tools.py            # MCP tool adapters for LangChain
-│   ├── workflow/               # LangGraph workflow
-│   │   └── orchestration.py    # Train recommendation workflow
-│   ├── bot/                    # Discord bot
-│   │   └── discord_bot.py      # Discord bot with slash commands
-│   └── config/                 # Configuration
-│       └── config.py           # API keys and settings
-├── tests/                      # Test files
-├── env5/                       # Python virtual environment
-├── node_modules/               # Node.js dependencies
-├── .env                        # Environment variables (API keys)
-├── run_server.py               # Entry point for MCP server
-├── run_bot.py                  # Entry point for Discord bot
-├── requirements.txt            # Python dependencies
-├── package.json                # Node.js dependencies (RailKit SDK)
-└── README.md                   # This file
-```
+┌─ WHAT'S INSIDE ──────────────────────────────────────────────────────────────┐
 
-## 🚀 Quick Start
+The project is organized into folders based on what they do:
 
-### Prerequisites
-- Python 3.13+
-- Node.js 18+
-- Discord Bot Token
-- RailRadar API Key
-- RailKit API Key
+  src/api/      - Connects to RailRadar and RailKit APIs to fetch train data
+  src/server/   - MCP server that exposes train search tools
+  src/workflow/ - The brain of the bot - figures out what you want and finds the best trains
+  src/bot/      - The Discord interface where you interact with the bot
+  src/config/   - Stores API keys and settings
 
-### Installation
+You'll also find run_server.py and run_bot.py in the root - these are what 
+you run to start everything.
 
-1. **Clone and navigate to project:**
-   ```bash
-   cd c:\train_mcp_server
-   ```
 
-2. **Activate virtual environment:**
-   ```powershell
-   .\env5\Scripts\Activate.ps1
-   ```
+┌─ GETTING STARTED ────────────────────────────────────────────────────────────┐
 
-3. **Install Python dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+Before you can use the bot, you'll need:
+  • Python 3.13 or newer
+  • Node.js 18 or newer
+  • A Discord bot token (from Discord Developer Portal)
+  • API keys for RailRadar and RailKit
 
-4. **Install Node.js dependencies:**
-   ```bash
-   npm install
-   ```
 
-5. **Configure environment variables:**
-   Edit `.env` file:
-   ```env
-   RAILRADAR_API_KEY=your_railradar_key
-   RAILKIT_API_KEY=your_railkit_key
-   DISCORD_TOKEN=your_discord_token
-   IRCTC2_API_KEY=your_irctc2_key
-   ```
+┌─ SETTING EVERYTHING UP ──────────────────────────────────────────────────────┐
 
-### Running the Bot
+First, activate your Python virtual environment:
 
-1. **Start MCP Server (in one terminal):**
-   ```powershell
-   .\env5\Scripts\python.exe run_server.py
-   ```
+  .\env5\Scripts\Activate.ps1
 
-2. **Start Discord Bot (in another terminal):**
-   ```powershell
-   .\env5\Scripts\python.exe run_bot.py
-   ```
+Install the Python packages:
 
-## 📋 Discord Commands
+  pip install -r requirements.txt
 
-- `/train <query>` - Search for trains
-  - Example: `/train query: Howrah to Bhubaneswar on 9th August budget 2000 class 3A`
-- `/ping` - Check bot latency
-- `/help` - Show help message
+Install Node.js dependencies (needed for RailKit):
 
-## 🔄 Workflow
+  npm install
 
-1. **Extract constraints** - LLM extracts source, destination, date, budget, class from user query
-2. **Resolve stations** - Convert station names to codes using RailRadar API
-3. **Fetch trains** - Get train list from RailRadar API
-4. **Time filter** - Filter by departure/arrival preferences
-5. **Fetch seat data** - Get availability and fares from RailKit SDK (top 3 trains only)
-6. **Budget filter** - Filter by budget and seat availability
-7. **Rank trains** - Score trains based on multiple factors
-8. **Generate recommendation** - Create user-friendly recommendation
+Copy .env.example to .env and fill in your API keys. It should look something 
+like this:
 
-## 🔑 API Integrations
+  RAILRADAR_API_KEY=your_key_here
+  RAILKIT_API_KEY=your_key_here
+  DISCORD_TOKEN=your_bot_token
+  IRCTC2_API_KEY=optional_backup_key
 
-### RailRadar API
-- **Purpose:** Fetch train routes and schedules
-- **Endpoint:** `https://railradar-api.rajivdubey.dev`
-- **Usage:** Free tier
 
-### RailKit SDK
-- **Purpose:** Seat availability and fare lookup
-- **Package:** `npm install railkit`
-- **Usage:** Free tier (requires official Node.js SDK)
-- **Optimization:** Only checks top 3 trains to reduce API calls
+┌─ RUNNING THE BOT ────────────────────────────────────────────────────────────┐
 
-### IRCTC2 API (Fallback)
-- **Purpose:** Backup when RailKit fails
-- **Status:** Currently disabled due to reliability issues
+You need two terminal windows:
 
-## ⚙️ Configuration
+→ Terminal 1 - Start the MCP server first:
 
-### Key Settings
+  .\env5\Scripts\python.exe run_server.py
 
-- **Max trains to check:** 3 (in `src/workflow/orchestration.py`)
-- **API timeout:** 30-35 seconds
-- **Date format:** YYYY-MM-DD (internal), DD-MM-YYYY (RailKit)
-- **Class mapping:** Sleeper→SL, AC 3-Tier→3A, etc.
+→ Terminal 2 - Then start the Discord bot:
 
-## 🧪 Testing
+  .\env5\Scripts\python.exe run_bot.py
 
-Run tests from the `tests/` directory:
-```bash
-python tests/test_scenarios.py
-python tests/test_stations.py
-```
+The bot won't work without the MCP server running, so always start that first.
 
-## 📦 Dependencies
 
-### Python
-- `discord.py` - Discord bot framework
-- `fastmcp` - MCP server framework  
-- `langgraph` - Workflow orchestration
-- `langchain` - LLM integration
-- `requests` - HTTP client
-- `python-dotenv` - Environment variables
+┌─ USING THE BOT ──────────────────────────────────────────────────────────────┐
 
-### Node.js
-- `railkit` - Official RailKit SDK
+Once the bot is online in your Discord server, you can use these commands:
 
-## 🐛 Troubleshooting
+/train - This is the main command. Just describe what you're looking for:
+  • Mumbai to Delhi tomorrow, budget 5000
+  • Kolkata to Chennai on August 15th, AC 3 Tier class
+  • Cheap sleeper train from Bangalore to Hyderabad next week
 
-### Bot not connecting to Discord
-- Check `DISCORD_TOKEN` in `.env`
-- Verify bot has proper permissions in Discord Developer Portal
+/ping - Check if the bot is responding
 
-### MCP Server not starting
-- Ensure `run_server.py` path is correct in `src/mcp/tools.py`
-- Check Python virtual environment is activated
+/help - Get help and see examples
 
-### RailKit API errors
-- Verify API key is valid
-- Free tier requires official SDK (not direct REST calls)
-- Check network/firewall settings
 
-## 📝 License
+┌─ HOW IT WORKS ───────────────────────────────────────────────────────────────┐
 
-MIT
+When you send a query, here's what happens:
 
-## 👤 Author
+  [1] The bot uses AI to understand what you're asking for (source, destination, 
+      date, budget, etc.)
+  [2] It converts station names to codes (like Mumbai to MMCT)
+  [3] Searches for all trains on that route
+  [4] Filters them based on your time preferences
+  [5] Checks seat availability for the top 3 trains (to save API calls)
+  [6] Filters by your budget
+  [7] Ranks them and picks the best one
+  [8] Explains why it chose that train
 
-Sivam Singh
+The whole thing takes about 5-10 seconds depending on how many trains it needs 
+to check.
+
+
+┌─ ABOUT THE APIS ─────────────────────────────────────────────────────────────┐
+
+RailRadar API is used to search for stations and get train schedules. It's 
+free and pretty reliable.
+
+RailKit SDK gives us real-time seat availability and fares. We use their 
+official Node.js SDK because their free tier requires it. The bot only checks 
+the top 3 trains to avoid hitting rate limits.
+
+IRCTC2 API is there as a backup but isn't actively used right now.
+
+
+┌─ CONFIGURATION NOTES ────────────────────────────────────────────────────────┐
+
+The bot is set to check only the top 3 trains for seat availability. You can 
+change this in src/workflow/orchestration.py if you want, but more trains 
+means more API calls and longer wait times.
+
+Date formats can be natural language like "tomorrow" or "next Friday" - the 
+AI figures it out. Internally everything uses YYYY-MM-DD format.
+
+Class names are flexible - you can say "sleeper", "3A", "AC 3 Tier", whatever 
+makes sense.
+
+
+┌─ COMMON ISSUES ──────────────────────────────────────────────────────────────┐
+
+⚠ Bot doesn't respond to commands
+
+  Make sure you invited the bot with the applications.commands scope. Regular 
+  bot scope isn't enough for slash commands.
+
+⚠ "MCP client not initialized" error
+
+  The bot can't reach the MCP server. Make sure run_server.py is running 
+  before you start the bot.
+
+⚠ RailKit API errors
+
+  Check that your API key is valid. Also make sure Node.js is installed and 
+  you ran npm install. The SDK won't work without it.
+
+⚠ Bot says "no trains found" for valid routes
+
+  Try using full station names. Sometimes shorter names don't match. Also 
+  check that the date is in the future.
+
+
+┌─ HOW EVERYTHING CONNECTS ───────────────────────────────────────────────────┐
+
+Think of it like this:
+
+  You type a command in Discord 
+    ↓
+  Discord bot receives it 
+    ↓
+  Sends to LangGraph workflow 
+    ↓
+  Workflow asks MCP server for data 
+    ↓
+  MCP server calls Train APIs 
+    ↓
+  Data flows back up the chain 
+    ↓
+  You get a recommendation
+
+The MCP layer is what lets the workflow call the APIs without knowing the 
+implementation details. It's basically a clean interface.
+
+
+┌─ TECH STACK ─────────────────────────────────────────────────────────────────┐
+
+Python side:
+  ▸ discord.py for the Discord bot
+  ▸ fastmcp for the MCP server
+  ▸ langgraph for the workflow logic
+  ▸ langchain-ollama for AI/LLM integration
+  ▸ requests for API calls
+
+Node.js side:
+  ▸ railkit package (official SDK)
+
+
+┌─ LICENSE ────────────────────────────────────────────────────────────────────┐
+
+MIT - feel free to use this however you want.
+
+
+┌─ AUTHOR ─────────────────────────────────────────────────────────────────────┐
+
+Built by Sivam Singh
