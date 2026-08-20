@@ -57,11 +57,11 @@ like this:
 
 You need two terminal windows:
 
-→ Terminal 1 - Start the MCP server first:
+-> Terminal 1 - Start the MCP server first:
 
   .\env5\Scripts\python.exe run_server.py
 
-→ Terminal 2 - Then start the Discord bot:
+-> Terminal 2 - Then start the Discord bot:
 
   .\env5\Scripts\python.exe run_bot.py
 
@@ -127,22 +127,22 @@ makes sense.
 
 ┌─ COMMON ISSUES ──────────────────────────────────────────────────────────────┐
 
-⚠ Bot doesn't respond to commands
+! Bot doesn't respond to commands
 
   Make sure you invited the bot with the applications.commands scope. Regular 
   bot scope isn't enough for slash commands.
 
-⚠ "MCP client not initialized" error
+! "MCP client not initialized" error
 
   The bot can't reach the MCP server. Make sure run_server.py is running 
   before you start the bot.
 
-⚠ RailKit API errors
+! RailKit API errors
 
   Check that your API key is valid. Also make sure Node.js is installed and 
   you ran npm install. The SDK won't work without it.
 
-⚠ Bot says "no trains found" for valid routes
+! Bot says "no trains found" for valid routes
 
   Try using full station names. Sometimes shorter names don't match. Also 
   check that the date is in the future.

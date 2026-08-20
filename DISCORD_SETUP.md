@@ -9,10 +9,10 @@ step.
 ┌─ WHAT YOU'LL NEED ───────────────────────────────────────────────────────────┐
 
 Make sure you have these installed:
-  ✓ Python 3.8 or newer
-  ✓ Node.js (the bot needs it for RailKit)
-  ✓ The virtual environment set up (the env5 folder)
-  ✓ All the dependencies installed (pip install -r requirements.txt and npm install)
+  - Python 3.8 or newer
+  - Node.js (the bot needs it for RailKit)
+  - The virtual environment set up (the env5 folder)
+  - All the dependencies installed (pip install -r requirements.txt and npm install)
 
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -22,7 +22,7 @@ Make sure you have these installed:
 ┌─ STEP 1: MAKE A DISCORD APPLICATION ────────────────────────────────────────┐
 
 Head over to the Discord Developer Portal and log in:
-  → https://discord.com/developers/applications
+  -> https://discord.com/developers/applications
 
 Click "New Application" and give it a name - something like "Train Bot" or 
 whatever you want. Hit Create.
@@ -61,13 +61,13 @@ Save the file.
 Back in the Developer Portal, go to "OAuth2" then "URL Generator".
 
 Select these scopes:
-  ☑ bot
-  ☑ applications.commands (important - this is what makes slash commands work)
+  - bot
+  - applications.commands (important - this is what makes slash commands work)
 
 Then scroll down and select these permissions:
-  ☑ Send Messages
-  ☑ Embed Links
-  ☑ Read Message History
+  - Send Messages
+  - Embed Links
+  - Read Message History
 
 Copy the URL at the bottom, paste it in your browser, and select which server 
 you want to add the bot to. Click Authorize.
@@ -119,12 +119,12 @@ pop up. Click on one and fill in what it asks for.
 
 When you send a train query, here's what happens:
 
-  → The bot uses AI to figure out what you're asking for (where from, where to, 
+  -> The bot uses AI to figure out what you're asking for (where from, where to, 
     when, how much money, what class)
-  → It searches for stations and trains using the RailRadar API
-  → It checks seat availability for the best trains using RailKit
-  → It filters everything based on your budget and preferences
-  → Finally, it picks the best train and tells you why
+  -> It searches for stations and trains using the RailRadar API
+  -> It checks seat availability for the best trains using RailKit
+  -> It filters everything based on your budget and preferences
+  -> Finally, it picks the best train and tells you why
 
 The whole thing takes about 5-10 seconds.
 
@@ -133,28 +133,28 @@ The whole thing takes about 5-10 seconds.
 ║                       WHEN THINGS GO WRONG                                   ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-⚠ Slash commands don't show up
+! Slash commands don't show up
 
 Make sure you selected the applications.commands scope when you invited the 
 bot. If you didn't, you'll need to kick the bot and re-invite it with the 
 right permissions.
 
-⚠ Bot is online but doesn't respond
+! Bot is online but doesn't respond
 
 Did you start the MCP server first? The bot needs it to work. Always run 
 run_server.py before run_bot.py.
 
-⚠ "No trains found" for routes that exist
+! "No trains found" for routes that exist
 
 Try using full station names instead of abbreviations. For example, "New Delhi" 
 instead of "Delhi". Also double-check your date is in the future.
 
-⚠ RailKit API errors
+! RailKit API errors
 
 Make sure you ran npm install and that your RailKit API key is valid. The free 
 tier needs the official SDK to work.
 
-⚠ Bot crashes on startup
+! Bot crashes on startup
 
 Check that all your API keys are set in the .env file. If one is missing, the 
 bot will complain and exit.
@@ -179,13 +179,13 @@ makes things faster and prevents hitting rate limits on the free tier.
 ┌─ API KEYS YOU'LL NEED ───────────────────────────────────────────────────────┐
 
 RailRadar API Key
-  → Get this from https://api.railradar.in/ (free tier available)
+  -> Get this from https://api.railradar.in/ (free tier available)
 
 RailKit API Key
-  → Get this from https://railkit-api.rajivdubey.dev/ (free tier available)
+  -> Get this from https://railkit-api.rajivdubey.dev/ (free tier available)
 
 IRCTC2 API Key
-  → Optional, only needed as a backup
+  -> Optional, only needed as a backup
 
 Put all of these in your .env file.
 

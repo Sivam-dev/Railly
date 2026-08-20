@@ -43,8 +43,8 @@ Extract the following information whenever it is present:
 - destination: The user's destination railway station or location.
 - journey_date: The date on which the user wants to travel in YYYY-MM-DD format.
   If the user provides a date without year, assume the current year (2026).
-  Examples: "9th August" → "2026-08-09", "tomorrow" → calculate the actual date,
-  "15th" → "2026-MM-15" where MM is current or next month.
+  Examples: "9th August" -> "2026-08-09", "tomorrow" -> calculate the actual date,
+  "15th" -> "2026-MM-15" where MM is current or next month.
 - budget: The maximum amount the user is willing to spend on the journey.
 - preferred_departure: The user's preferred departure time or time period,
   such as morning, afternoon, evening, night, or a specific time.
@@ -193,13 +193,13 @@ async def Train_details_node(state: TrainState):
         source_code = await resolve_station(state["source"], auto_select_first=True)
         print(f"Source resolved: {state['source']} -> {source_code}")
     except Exception as e:
-        print(f"❌ Source resolution failed: {e}")
+        print(f"Source resolution failed: {e}")
         raise
     try:
         destination_code = await resolve_station(state["destination"], auto_select_first=True)
-        print(f"✅ Destination resolved: {state['destination']} -> {destination_code}")
+        print(f"Destination resolved: {state['destination']} -> {destination_code}")
     except Exception as e:
-        print(f"❌ Destination resolution failed: {e}")
+        print(f"Destination resolution failed: {e}")
         raise
     journey_date = state["journey_date"]
     from datetime import datetime
@@ -217,7 +217,7 @@ async def Train_details_node(state: TrainState):
         try:
             date_obj = datetime.strptime(journey_date, fmt)
             formatted_date = date_obj.strftime("%d-%m-%Y")
-            print(f"📅 Date converted: {journey_date} → {formatted_date}")
+            print(f"Date converted: {journey_date} -> {formatted_date}")
             break
         except:
             continue
@@ -229,7 +229,7 @@ async def Train_details_node(state: TrainState):
                     try:
                         date_obj = datetime.strptime(journey_date_with_year, fmt)
                         formatted_date = date_obj.strftime("%d-%m-%Y")
-                        print(f"📅 Date converted (added year): {journey_date} → {formatted_date}")
+                        print(f"Date converted (added year): {journey_date} -> {formatted_date}")
                         break
                     except:
                         continue
@@ -237,9 +237,9 @@ async def Train_details_node(state: TrainState):
             pass
     if formatted_date is None:
         formatted_date = journey_date
-        print(f"⚠️ Could not parse date format: {formatted_date}")
-        print(f"⚠️ API may reject this date. Please use YYYY-MM-DD format.")
-    print(f"🔍 Searching trains with RailRadar API: {source_code} → {destination_code} on {formatted_date}")
+        print(f"Could not parse date format: {formatted_date}")
+        print(f"API may reject this date. Please use YYYY-MM-DD format.")
+    print(f"Searching trains with RailRadar API: {source_code} -> {destination_code} on {formatted_date}")
     search_trains_tool = await get_search_trains_tool_async()
     formatted_date_yyyy = formatted_date
     try:
@@ -261,7 +261,7 @@ async def Train_details_node(state: TrainState):
         if api_response.get('success'):
             data = api_response.get('data', {})
             trains_array = data.get('trains', [])
-            print(f"✅ Found {len(trains_array)} trains from RailRadar API")
+            print(f"Found {len(trains_array)} trains from RailRadar API")
             for train_info in trains_array:
                 train_obj = train_info.get('train', {})
                 from_info = train_info.get('from', {})
@@ -283,19 +283,19 @@ async def Train_details_node(state: TrainState):
                     "distanceKm": train_info.get('distance'),
                     "classAvailability": []  # Note: RailRadar doesn't provide class/fare info
                 })
-            print(f"✅ Processed {len(train_details)} trains (note: fare info not available from RailRadar)")
+            print(f"Processed {len(train_details)} trains (note: fare info not available from RailRadar)")
         else:
             error_msg = api_response.get('error', 'Unknown error')
-            print(f"❌ API returned error: {error_msg}")
+            print(f"API returned error: {error_msg}")
     else:
-        print(f"⚠️ Unexpected result format: {type(result)}")
+        print(f"Unexpected result format: {type(result)}")
     return {"trains": train_details}
 def class_budget_filter(state: TrainState):
     budget = state["budget"]
     preferred_class = state["preferred_class"]
     trains = state["time_filtered_trains"]
     
-    print(f"💰 Filtering {len(trains)} trains by seat availability and budget...")
+    print(f"Filtering {len(trains)} trains by seat availability and budget...")
     
     filtered_trains = []
     alternative_trains = []
@@ -305,7 +305,7 @@ def class_budget_filter(state: TrainState):
         seat_data = train.get("seat_data")
         
         if not seat_data:
-            print(f"  ⚠️ Train {train.get('trainNumber')}: No seat data, skipping")
+            print(f"  Train {train.get('trainNumber')}: No seat data, skipping")
             trains_without_data += 1
             continue
         
@@ -318,7 +318,7 @@ def class_budget_filter(state: TrainState):
             availability_list = data.get("availability", [])
             
             if not availability_list:
-                print(f"  ⚠️ Train {train.get('trainNumber')}: No availability data")
+                print(f"  Train {train.get('trainNumber')}: No availability data")
                 trains_without_data += 1
                 continue
             
@@ -327,15 +327,15 @@ def class_budget_filter(state: TrainState):
             avail_text = first_day.get("availabilityText", "")
             total_fare = fare_info.get("totalFare", 0)
             
-            print(f"  🚂 Train {train.get('trainNumber')} (RailKit): Fare ₹{total_fare}, Status: {status}, {avail_text}")
+            print(f"  Train {train.get('trainNumber')} (RailKit): Fare ₹{total_fare}, Status: {status}, {avail_text}")
             
             # Check if seats are available (not waitlist)
             if status == "WAITLIST" and "WL" in avail_text:
-                print(f"     ❌ Waitlist only, excluding")
+                print(f"     Waitlist only, excluding")
                 continue
             
             if total_fare > budget:
-                print(f"     ❌ Over budget")
+                print(f"     Over budget")
                 continue
             
             train_copy = train.copy()
@@ -351,11 +351,11 @@ def class_budget_filter(state: TrainState):
         elif source == "irctc2":
             classes = data.get("classes", [])
             if not classes:
-                print(f"  ⚠️ Train {train.get('trainNumber')}: No class data from IRCTC2")
+                print(f"  Train {train.get('trainNumber')}: No class data from IRCTC2")
                 trains_without_data += 1
                 continue
             
-            print(f"  🚂 Train {train.get('trainNumber')} (IRCTC2): {len(classes)} classes")
+            print(f"  Train {train.get('trainNumber')} (IRCTC2): {len(classes)} classes")
             
             valid_classes = []
             for cls in classes:
@@ -371,19 +371,19 @@ def class_budget_filter(state: TrainState):
                     valid_classes.append(cls)
             
             if not valid_classes:
-                print(f"     ❌ No available classes within budget")
+                print(f"     No available classes within budget")
                 continue
             
             train_copy = train.copy()
             train_copy["selected_classes"] = valid_classes
             filtered_trains.append(train_copy)
         
-        print(f"     ✅ Train passed filter")
+        print(f"     Train passed filter")
     
     if trains_without_data > 0:
-        print(f"⚠️ {trains_without_data} trains skipped due to unavailable seat data")
+        print(f"{trains_without_data} trains skipped due to unavailable seat data")
     
-    print(f"✅ {len(filtered_trains)} trains passed seat availability and budget filter")
+    print(f"{len(filtered_trains)} trains passed seat availability and budget filter")
     
     return {"budget_filtered_trains": filtered_trains, "alternative_class_trains": alternative_trains}
 def time_preference_filter(state: TrainState):
@@ -503,7 +503,7 @@ def time_preference_filter(state: TrainState):
     return {"time_filtered_trains": filtered_trains}
 
 async def fetch_railkit_data_node(state: TrainState):
-    """Fetch seat availability using hybrid approach: RailKit → IRCTC2 fallback"""
+    """Fetch seat availability using hybrid approach: RailKit -> IRCTC2 fallback"""
     trains = state["time_filtered_trains"]
     source_code = None
     dest_code = None
@@ -515,7 +515,7 @@ async def fetch_railkit_data_node(state: TrainState):
             break
     
     if not source_code or not dest_code:
-        print("⚠️ Cannot fetch seat data: missing station codes")
+        print("Cannot fetch seat data: missing station codes")
         return {}
     
     journey_date = state["journey_date"]
@@ -548,14 +548,14 @@ async def fetch_railkit_data_node(state: TrainState):
     MAX_TRAINS_TO_CHECK = 3
     trains_to_check = trains[:MAX_TRAINS_TO_CHECK]
     
-    print(f"💳 Fetching seat data for top {len(trains_to_check)} trains (out of {len(trains)} total, class: {coach_code}, quota: GN)...")
+    print(f"Fetching seat data for top {len(trains_to_check)} trains (out of {len(trains)} total, class: {coach_code}, quota: GN)...")
     
     from src.api.train_api import get_seat_availability_hybrid
     
     enriched_trains = []
     for train in trains_to_check:
         train_number = train.get("trainNumber")
-        print(f"  🎫 Fetching seat data for train {train_number}...")
+        print(f"  Fetching seat data for train {train_number}...")
         
         try:
             result = get_seat_availability_hybrid(str(train_number), source_code, dest_code, formatted_date, coach_code, "GN")
@@ -564,20 +564,20 @@ async def fetch_railkit_data_node(state: TrainState):
                 train_copy = train.copy()
                 train_copy["seat_data"] = result
                 enriched_trains.append(train_copy)
-                print(f"     ✅ Got data from {result['source'].upper()}")
+                print(f"     Got data from {result['source'].upper()}")
             else:
                 enriched_trains.append(train)
-                print(f"     ⚠️ No seat data available")
+                print(f"     No seat data available")
                 
         except Exception as e:
-            print(f"     ❌ Error: {e}")
+            print(f"     Error: {e}")
             enriched_trains.append(train)
     
     # Add remaining trains without seat data (won't pass filter anyway)
     for train in trains[MAX_TRAINS_TO_CHECK:]:
         enriched_trains.append(train)
     
-    print(f"💳 Enriched {len(enriched_trains)} trains (checked {len(trains_to_check)} for seats)")
+    print(f"Enriched {len(enriched_trains)} trains (checked {len(trains_to_check)} for seats)")
     return {"time_filtered_trains": enriched_trains}
 
 def rank_trains(state: TrainState):
@@ -727,7 +727,7 @@ def generate_recommendation(state: TrainState):
     best_train_with_fare["fare"] = fare
     best_train_with_fare["class"] = class_type
     
-    final_response = f"🚂 Recommended Train:\n\n"
+    final_response = f"Recommended Train:\n\n"
     final_response += f"Train: {train_number} - {train_name}\n"
     final_response += f"From: {from_station} at {departure}\n"
     final_response += f"To: {to_station} at {arrival}\n"
@@ -735,7 +735,7 @@ def generate_recommendation(state: TrainState):
     final_response += f"Match Score: {score}/240\n\n"
     
     if not best_train.get("has_preferred_class", True) and state.get("preferred_class"):
-        final_response += f"⚠️ Note: {state['preferred_class']} class not available. Showing alternative classes:\n\n"
+        final_response += f"Note: {state['preferred_class']} class not available. Showing alternative classes:\n\n"
     
     if "selected_classes" in best_train:
         final_response += "Available Classes:\n"
@@ -748,7 +748,7 @@ def generate_recommendation(state: TrainState):
     
     rating = best_train.get("rating")
     if rating:
-        final_response += f"\nRating: ⭐ {rating}/5\n"
+        final_response += f"\nRating: {rating}/5\n"
     distance = best_train.get("distanceKm")
     if distance:
         final_response += f"Distance: {distance} km\n"
@@ -757,7 +757,7 @@ def generate_recommendation(state: TrainState):
         final_response += f"Pantry: {pantry}\n"
     
     if len(ranked_trains) > 1:
-        final_response += f"\n📋 {len(ranked_trains) - 1} other train(s) also available.\n"
+        final_response += f"\n{len(ranked_trains) - 1} other train(s) also available.\n"
     
     return {
         "recommended_train": best_train_with_fare,
@@ -831,7 +831,7 @@ def build_train_recommendation_graph():
 if __name__ == "__main__":
     import asyncio
     async def main():
-        print("🚀 Starting train recommendation workflow...")
+        print("Starting train recommendation workflow...")
         graph = build_train_recommendation_graph()
         initial_state = {
             "user_query": "I want to travel from MUMBAI CENTRAL to NEW DELHI on 2026-08-15 with budget 2000, 3A class, morning departure, evening arrival",
@@ -851,14 +851,14 @@ if __name__ == "__main__":
             "follow_up_question": None,
             "recommendation": None
         }
-        print(f"📝 Initial query: {initial_state['user_query']}")
+        print(f"Initial query: {initial_state['user_query']}")
         try:
             result = await graph.ainvoke(initial_state)
-            print(f"\n🔍 Debug - Final state keys:")
+            print(f"\nDebug - Final state keys:")
             for key, value in result.items():
                 if key == "trains" and isinstance(value, list) and value:
                     print(f"  {key}: list with {len(value)} items")
-                    print(f"    → Train details: {value[0] if value else 'none'}")
+                    print(f"    -> Train details: {value[0] if value else 'none'}")
                 elif isinstance(value, (list, dict)) and value:
                     print(f"  {key}: {type(value).__name__} with {len(value)} items")
                 elif value is not None:
@@ -871,7 +871,7 @@ if __name__ == "__main__":
             print(result.get("final_response", "No recommendation generated"))
             print("="*60)
         except Exception as e:
-            print(f"❌ Error during execution: {e}")
+            print(f"Error during execution: {e}")
             import traceback
             traceback.print_exc()
     asyncio.run(main())
