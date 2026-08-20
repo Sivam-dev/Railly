@@ -30,6 +30,9 @@ async def on_ready():
     print(f"{bot.user} is now online!")
     print(f"Connected to {len(bot.guilds)} server(s)")
     
+    activity = discord.Game(name="Finding your train 🚆")
+    await bot.change_presence(activity=activity)
+    
     print("Building train recommendation workflow...")
     try:
         bot.train_graph = build_train_recommendation_graph()
