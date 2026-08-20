@@ -1,5 +1,5 @@
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                  🚂   TRAIN RECOMMENDATION DISCORD BOT                         ║
+║                     🚆 TRAIN RECOMMENDATION DISCORD BOT                       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 This is a Discord bot that helps you find the best trains for your journey. 
